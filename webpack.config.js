@@ -10,7 +10,8 @@ module.exports = {
   mode: 'development', // development or production
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.[hash:8].js' // 添加hash戳，使每次打包都生成新的文件，已解决缓存问题;  :8 指只显示8位的hash戳
+    filename: 'bundle.[hash:8].js', // 添加hash戳，使每次打包都生成新的文件，已解决缓存问题;  :8 指只显示8位的hash戳
+    publicPath: 'https://www.baidu.com' , // 对引用的资源，加前缀（域名）
   },
   /**
    * 开发服务器配置
@@ -32,13 +33,13 @@ module.exports = {
       }
     }),
     new MiniCssExtractPlugin({
-      filename: 'index.[hash].css'
+      filename: 'css/index.[hash].css',
     }),
     new webpack.ProvidePlugin({ // 在每个模块中注入$
       $: 'jquery'
     })
   ],
-  externals:{ //以下申明的东西打包时不会被打包
+  externals: { //以下申明的东西打包时不会被打包
     jquery: '$' // 
   },
   module: {
@@ -50,24 +51,30 @@ module.exports = {
       //   use: 'expose-loader?$'
       // },
       {
-        test:/(jpg|png)$/,
-        use: 'file-loader'
+        test: /(jpg|png)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            outputPath: 'img/', //图片打包目录
+            publicPath: '', //当只给图片加单独的引用域名
+          }
+        }
       },
       {
-        test:/(jpg|png)$/,
+        test: /(jpg|png)$/,
         // 当图片小于200K时 使用base64转换
         use: {
           loader: 'url-loader',
-          options:{
-            limit: 200*1024,
-            outputPath: 'img/' //图片打包目录
+          options: {
+            limit: 200 * 1024,
+
           }
         }
       },
       {
         test: /.css$/,
         // 可替代style-loader
-        use: [ MiniCssExtractPlugin.loader,
+        use: [MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
@@ -80,7 +87,7 @@ module.exports = {
       {
         test: /.less$/,
         // 可替代style-loader
-        use: [ MiniCssExtractPlugin.loader,
+        use: [MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
@@ -105,7 +112,9 @@ module.exports = {
             options: {
               presets: ['@babel/preset-env'],
               plugins: [
-                ['@babel/plugin-proposal-decorators', { 'legacy': true }],
+                ['@babel/plugin-proposal-decorators', {
+                  'legacy': true
+                }],
                 '@babel/plugin-proposal-class-properties'
               ]
             }
