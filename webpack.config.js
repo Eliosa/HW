@@ -43,15 +43,22 @@ module.exports = {
 		// 	})
 		// }
 	},
-	resolve:{ // 解析第三方包 common
+	resolve:{ // 解析第三方包 commonJS 查找引用的模块 会从node_modules中查找，
 		modules:[ //强制查找的目录
 			path.resolve('node_modules')
 		],
-		alias: { //别名
+		mainFields: ['style', 'js'], //主入口， 先找style，若找不到，则找js
+		mainFiles: [], //指定入口文件的名字， 默认index.js
+ 		alias: { //别名
 			bootstrap: 'bootstrap/dist/css/bootstrap.css'
-		}
+		},
+		extensions:['.js','.css','.vue'], //当 import './style'  会按照 ./style.js,  ./style.css, ./style.vue的顺序寻找，直到找到
 	},
 	plugins:[
+		new webpack.DefinePlugin({ // 将下面申明的变量定义到全局环境中
+			DEV: JSON.stringify('dev'), // "'dev'" console.log('dev'),
+			FLAG: 'true'
+		}),
 		new htmlWebpackPlugin({
 			template: './view/index.html',
 			filename: 'main.html',

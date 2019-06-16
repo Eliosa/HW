@@ -43,6 +43,7 @@ module.exports = {
     jquery: '$' // 
   },
   module: {
+    noParse: /jquery/, //当文件引用jquery时， 打包时不会去解析jquery的依赖关系
     // 当使用多个loader时， 其执行顺序默认从右向左
     // loader 可以写成对象，用于传入参数option {loader:'css-loader',option:''}
     rules: [
